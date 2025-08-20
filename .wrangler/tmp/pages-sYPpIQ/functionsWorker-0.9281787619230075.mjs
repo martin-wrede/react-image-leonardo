@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// ../.wrangler/tmp/bundle-TJIQr5/checked-fetch.js
+// ../.wrangler/tmp/bundle-an8VZY/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -125,127 +125,6 @@ async function onRequest(context) {
 }
 __name(onRequest, "onRequest");
 
-// ai copy.js
-async function onRequest2(context) {
-  const { request, env } = context;
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "*"
-      }
-    });
-  }
-  if (request.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
-  }
-  try {
-    const body = await request.json();
-    const { prompt, action, taskId } = body;
-    console.log("\u{1F4E5} Received body:", body);
-    if (action === "generate") {
-      if (!prompt) throw new Error("Prompt is required");
-      const startRes = await fetch("https://cloud.leonardo.ai/api/rest/v1/generations", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.LEONARDO_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          prompt,
-          modelId: "ac614f96-1082-45bf-be9d-757f2d31c174",
-          // Leonardo Vision XL
-          height: 1024,
-          width: 1024,
-          num_images: 1,
-          num_inference_steps: 25,
-          guidance_scale: 7,
-          presetStyle: "LEONARDO"
-        })
-      });
-      const startData = await startRes.json();
-      console.log("\u{1F9E9} Leonardo API Response:", startData);
-      if (!startRes.ok) {
-        throw new Error(`Failed to start image generation: ${JSON.stringify(startData)}`);
-      }
-      const generationId = startData.sdGenerationJob?.generationId;
-      if (!generationId) {
-        throw new Error("Missing generationId from Leonardo response.");
-      }
-      return new Response(JSON.stringify({
-        success: true,
-        taskId: generationId
-      }), {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        }
-      });
-    }
-    if (action === "status") {
-      if (!taskId) throw new Error("Missing taskId");
-      console.log("\u{1F50D} Checking image status for task:", taskId);
-      const statusResponse = await fetch(`https://cloud.leonardo.ai/api/rest/v1/generations/${taskId}`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${env.LEONARDO_API_KEY}`
-        }
-      });
-      let statusData;
-      try {
-        statusData = await statusResponse.json();
-        console.log("\u{1F4E6} statusData:", JSON.stringify(statusData));
-      } catch (jsonError2) {
-        const raw = await statusResponse.text();
-        console.error("\u274C Failed to parse JSON:", raw);
-        throw new Error(`Non-JSON response from Leonardo: ${raw}`);
-      }
-      if (!statusResponse.ok) {
-        throw new Error(`Status API error: ${JSON.stringify(statusData)}`);
-      }
-      const job = statusData.generations_by_pk;
-      if (!job) {
-        throw new Error(`Generation job with ID ${taskId} not found.`);
-      }
-      return new Response(JSON.stringify({
-        success: true,
-        status: job.status,
-        imageUrl: job.generated_images?.[0]?.url || null,
-        failure: job.status === "FAILED" ? "Generation failed on Leonardo" : null
-      }), {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        }
-      });
-    }
-    return new Response(JSON.stringify({
-      success: false,
-      error: "Invalid action"
-    }), {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      }
-    });
-  } catch (error) {
-    console.error("\u{1F525} ERROR:", error);
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message || "Unknown error"
-    }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      }
-    });
-  }
-}
-__name(onRequest2, "onRequest");
-
 // ../.wrangler/tmp/pages-sYPpIQ/functionsRoutes-0.012181200267367132.mjs
 var routes = [
   {
@@ -254,13 +133,6 @@ var routes = [
     method: "",
     middlewares: [],
     modules: [onRequest]
-  },
-  {
-    routePath: "/ai copy",
-    mountPath: "/",
-    method: "",
-    middlewares: [],
-    modules: [onRequest2]
   }
 ];
 
@@ -751,7 +623,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// ../.wrangler/tmp/bundle-TJIQr5/middleware-insertion-facade.js
+// ../.wrangler/tmp/bundle-an8VZY/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -783,7 +655,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// ../.wrangler/tmp/bundle-TJIQr5/middleware-loader.entry.ts
+// ../.wrangler/tmp/bundle-an8VZY/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
